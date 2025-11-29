@@ -14,6 +14,8 @@ Projeto com 3 questões práticas de engenharia de dados envolvendo ETL, orquest
 │   └── dag_regua_cobranca.py
 ├── questao_3/
 │   ├── validacao_aplicacoes.sql
+│   ├── validacao_local.py
+│   ├── requirements.txt
 │   └── dados/
 │       ├── application_record_local.csv
 │       └── application_record_gcp.csv
@@ -158,18 +160,37 @@ bq load \
 
 ### Como executar
 
+**Opção 1 - Execução Local (SQLite + Python):**
+
 ```bash
-# Opção 1: Via bq CLI
-bq query --use_legacy_sql=false < questao_3/validacao_aplicacoes.sql
+cd questao_3
 
-# Opção 2: Criar a procedure no BigQuery Console
-# Copiar o conteúdo do arquivo e executar no BigQuery Console
+# Instalar dependências
+pip install -r requirements.txt
 
-# Executar a procedure (após criada)
-CALL `elviscsprot-desafio.engenharia_dados.prc_load_validacao_aplicacoes`('2024-01-15');
+# Executar validação local
+python validacao_local.py
 ```
 
-**Parâmetro:** `dt_referencia` - Data de referência para validação (formato: YYYY-MM-DD)
+O script irá:
+1. Carregar os CSVs (local e GCP)
+2. Inserir no banco SQLite
+3. Comparar as bases e identificar inconsistências
+4. Gerar arquivo `validacao.db` com os resultados
+
+**Opção 2 - BigQuery (Cloud):**
+
+```bash
+# Via bq CLI
+bq query --use_legacy_sql=false < questao_3/validacao_aplicacoes.sql
+
+# Executar a procedure (após criada)
+CALL `elviscsprot-desafio.engenharia_dados.prc_load_validacao_aplicacoes`(5008804, 5008900);
+```
+
+**Parâmetros:**
+- `id_inicio` (INT64) - ID inicial da faixa de registros a validar
+- `id_fim` (INT64) - ID final da faixa de registros a validar
 
 ### Consultar resultados
 
