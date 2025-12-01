@@ -1,6 +1,5 @@
 import requests
 import sqlite3
-import json
 
 
 def criar_tabelas(conn):
@@ -33,9 +32,9 @@ def criar_tabelas(conn):
 
 def buscar_usuarios():
     url = 'https://dummyjson.com/users'
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     response.raise_for_status()
-    return response.json()['users']
+    return response.json().get('users', [])
 
 
 def inserir_dados(conn, usuarios):
@@ -87,4 +86,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
